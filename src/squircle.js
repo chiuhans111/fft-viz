@@ -39,6 +39,8 @@ function squircle_points(squircle_parameter, true_radius) {
 
 
 function squircle(x, y, width, height, cornerRadius) {
+    if (width < 1e-3) width = 1e-3
+    if (height < 1e-3) height = 1e-3
     cornerRadius = Math.min(width / 2, height / 2, cornerRadius)
 
     const x_safe_ratio = (width / 2 - cornerRadius) / (width / 2)
@@ -105,5 +107,6 @@ function squircle(x, y, width, height, cornerRadius) {
 
     return path.join(' ');
 }
+
 
 export { squircle }

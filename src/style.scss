@@ -1,7 +1,8 @@
-@import "./style/reset.scss";
+@forward "./style/reset.scss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 body {
-  font-family: sans-serif;
+  font-family: 'inter', sans-serif;
 }
 
 .container{
@@ -9,4 +10,3 @@ body {
   padding: 8px;
   max-width: min(100vh, 1200px);
 }
-
