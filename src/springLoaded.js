@@ -83,8 +83,8 @@ class SpringLoaded {
             x1-=modulo
         }
 
-        if (Math.abs(x1)>0.1){
-            if(x1<0) x1+=modulo
+        if (Math.abs(x1)>0.01){
+            if(x1<0 && x1*x0<0) x1+=modulo
         }
 
         while(x0-x1 < -modulo/2){
