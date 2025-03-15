@@ -51,8 +51,8 @@ class DynamicIsland {
         this.show = new SpringLoaded(1, 1, 1, 1)
 
         // Initial value for the size
-        this.w.value = 0
-        this.h.value = 0
+        // this.w.value = 0
+        // this.h.value = 0
         this.show.value = 0
 
     

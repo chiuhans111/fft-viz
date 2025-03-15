@@ -30,7 +30,7 @@ const updatables = [fft]
 function update(time) {
   requestAnimationFrame(update)
   let delta_time = (time - lastTime) / 100;
-  delta_time = Math.min(delta_time, 0.1)
+  delta_time = Math.min(delta_time, 1)
   lastTime = time;
   // main
 
