@@ -4,8 +4,27 @@ import './style.scss'
 
 let lastTime = 0
 
+function getFFTParamsFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const params = urlParams.get('fftParams');
+  if (params) {
+    console.log(params)
+    try {
+      const parsedParams = params.split(',').map(x=>parseInt(x))
+      console.log(parsedParams)
+      return parsedParams
+    } catch (e) {
+      console.error('Invalid fftParams in URL:', e);
+    }
+  }
+  return [2, 2, 1];
+}
 
-const fft = new FFTMatrix([2, 2, 2, 1])
+const fftParams = getFFTParamsFromURL();
+const fft = new FFTMatrix(fftParams);
+
+
+
 const updatables = [fft]
 
 function update(time) {
