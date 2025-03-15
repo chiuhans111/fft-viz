@@ -28,16 +28,21 @@ class DynamicIsland {
         this.text.style.pointerEvents = 'none'
         this.g.append(this.text)
 
-        this.x = new SpringLoaded(x, 1, 2, 0.9999)
-        this.y = new SpringLoaded(y, 1, 2, 0.9999)
-        this.w = new SpringLoaded(width, 1, 1, 0.9999)
-        this.h = new SpringLoaded(height, 1, 1, 0.9999)
-        this.r = new SpringLoaded(radius, 1, 1, 0.99)
+        this.x = new SpringLoaded(x, 1, 1, 0.6)
+        this.y = new SpringLoaded(y, 1, 1, 1)
+        this.w = new SpringLoaded(width, 1, 1, 1)
+        this.h = new SpringLoaded(height, 1, 1, 1)
+        this.r = new SpringLoaded(radius, 1, 1, 1)
 
-        this.show = new SpringLoaded(1, 1, 1, 0.999)
+        this.show = new SpringLoaded(1, 1, 1, 1)
+        this.w.value = 0
+        this.h.value = 0
+        this.show.value = 0
+
+
 
         this.childs = []
-        this.margin = new SpringLoaded(1, 1, 1, 0.9999)
+        this.margin = new SpringLoaded(1, 1, 1, 1)
     }
 
     update(delta_time) {
@@ -75,7 +80,7 @@ class DynamicIsland {
 
         this.g.setAttribute('transform', `translate(${this.x.value.toFixed(2)}, ${this.y.value.toFixed(2)})`)
 
-        this.path.setAttribute('opacity', this.show.value.toFixed(2))
+        this.g.setAttribute('opacity', this.show.value.toFixed(2))
 
         const text_rect = this.text.getBBox()
         // this.text.setAttribute('x', this.x.value.toFixed(2))
@@ -88,7 +93,7 @@ class DynamicClock extends DynamicIsland {
     constructor(x, y, width, height, radius, time) {
         super(x, y, width, height, radius)
 
-        this.time = new SpringLoaded(0, 1, 1, 0.99999)
+        this.time = new SpringLoaded(0, 1, 1, 0.8)
 
         this.time.target = time
 
@@ -100,7 +105,7 @@ class DynamicClock extends DynamicIsland {
         this.time_hand_g.append(this.time_hand)
 
         // 0 for inside, 1 for outside
-        this.time_hand_fac = new SpringLoaded(0, 1, 1, 1.1)
+        this.time_hand_fac = new SpringLoaded(0, 1, 2, 0.7)
 
 
         this.time_hand.style.pointerEvents = 'none'
@@ -112,12 +117,16 @@ class DynamicClock extends DynamicIsland {
         this.interact = true
         this.text.textContent = text
         this.path.style.pointerEvents = ''
+
+
         this.path.addEventListener('mouseenter', function () {
             self.time_hand_fac.target = 1
         })
+
         this.path.addEventListener('mouseleave', function () {
             self.time_hand_fac.target = 0
         })
+
     }
 
     update(delta_time) {
@@ -156,20 +165,20 @@ class DynamicClock extends DynamicIsland {
             l * this.time_hand_fac.value - thickness / 2,
             - thickness / 2,
 
-            (l - thickness) * (1 - this.time_hand_fac.value) + this.time_hand_fac.value * thickness,
+            Math.max(thickness, (l - thickness) * (1 - this.time_hand_fac.value) + this.time_hand_fac.value * thickness),
             thickness,
 
             thickness
         ))
 
-        const color = 'rgb(' + hslToRgb(this.time.value, 0.6, 0.5).join(',') + ')'
+        const color = 'rgb(' + hslToRgb(this.time.value, 0.65, 0.55).join(',') + ')'
         this.path.setAttribute('fill', color)
         // const color = 'black'
 
         this.time_hand.setAttribute('stroke', color)
         this.time_hand.setAttribute('stroke-width', thickness * 2)
         this.time_hand.setAttribute('paint-order', 'stroke')
-        this.time_hand.setAttribute('opacity', this.show.value.toFixed(2))
+        // this.time_hand.setAttribute('opacity', this.show.value.toFixed(2))
 
 
         this.path.setAttribute('stroke-width', thickness * Math.max(0, this.time_hand_fac.value.toFixed(2)))

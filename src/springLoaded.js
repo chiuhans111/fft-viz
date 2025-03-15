@@ -1,27 +1,30 @@
 class SpringLoaded {
-    constructor(value, mass = 1, spring = 1, damping_ratio = 0.99) {
+    constructor(value, mass = 1, spring = 1, damping_ratio = 1) {
 
         this.target = value
         this.value = value
 
-        const m = mass
-        const k = spring
-        const b = Math.sqrt(4 * m * k) * damping_ratio
-        // b should be < sqrt(4mk)
-
-        this.l1 = -b / 2 / m
-        this.l2 = Math.sqrt(Math.abs(this.l1 ** 2 - k / m))
-        this.underdamp = b < Math.sqrt(4*m*k)
-
         this.previous_value = value
 
-        // mx'' + bx' + kx = 0
-        this.m = m
-        this.k = k
-        this.b = b
+        this.mass = mass
+        this.spring = spring
+        this.damping_ratio = damping_ratio
 
         this.acceleration = 0
         this.delay = 0
+
+        this.solveEquation()
+    }
+
+    solveEquation(){
+        // mx'' + bx' + kx = 0
+        const m = this.mass
+        const k = this.spring
+        const b = Math.sqrt(4 * m * k) * this.damping_ratio
+         
+        this.l1 = -b / 2 / m
+        this.l2 = Math.sqrt(Math.abs(this.l1 ** 2 - k / m))
+        this.underdamp = b < Math.sqrt(4*m*k)
 
     }
 
@@ -44,73 +47,58 @@ class SpringLoaded {
         this.previous_value = value
     }
 
-    solve(x0, x1) {
-        x1 *= 0.98
-        let P = Math.atan2(x1 - this.l1 * x0, - this.l2 * x0)
-
-        let A;
-
-        if (Math.abs(Math.cos(P)) > 1e-10) {
-            A = x0 / Math.cos(P);
-        } else if (Math.abs(this.l1 * Math.cos(P) - this.l2 * Math.sin(P)) > 1e-10) {
-            A = x1 / (this.l1 * Math.cos(P) - this.l2 * Math.sin(P));
-        } else {
-            A = this.A 
-        }
-
-        this.A = A
-        this.P = P
-        this.x1 = x1
-        this.x0 = x0
-
-        return { A, P }
-    }
-
     update(delta_time = 16) {
         if (this.delay > 0)
             this.delay -= delta_time
         // delta_time can be in any unit 
         // as long as it's consistent with other definition used
 
+        const [c1, c0] = this.getCoeff(delta_time)
+
         // find out the current velocity
-        let x1 = (this.value - this.previous_value) / delta_time + this.acceleration
-        this.acceleration = 0
+        let x0 = this.previous_value - this.target - this.acceleration * delta_time
         this.previous_value = this.value
-        let x0 = this.value - this.target
+        let x1 = this.value - this.target
+        let x2 = c1 * x1 - c0 * x0
 
-        if (this.delay > 0) x0 = 0
-
-        // solve for: 
-
-        const { A, P } = this.solve(x0, x1)
-
-
-        this.value = A * Math.exp(this.l1 * delta_time) * Math.cos(this.l2 * delta_time + P) + this.target
+        this.value = x2 + this.target 
+        this.acceleration = 0
     }
 
     update_modulo(delta_time = 16, modulo = 1) {
         if (this.delay > 0)
             this.delay -= delta_time
 
+        const [c1, c0] = this.getCoeff(delta_time)
 
         // find out the current velocity
-        let x1 = (((this.value - this.previous_value + modulo * 10.5) % modulo) - modulo * 0.5) / delta_time + this.acceleration
-        this.acceleration = 0
+        let x0 = this.previous_value - this.target - this.acceleration * delta_time
         this.previous_value = this.value
-        // let x0 = ((this.value - this.target + modulo * 10.5) % modulo) - modulo * 0.5
-        let x0 = this.value - this.target
-        let x0_ = ((x0 + modulo * 10.5) % modulo) - modulo * 0.5
+        let x1 = this.value - this.target
 
-        if (Math.abs(x0_) < 1e-3) {
-            x0 = x0_
+        while(x1 < -modulo/2){
+            x1+=modulo
         }
-        if (this.delay > 0) x0 = 0
+        while(x1 > modulo/2){
+            x1-=modulo
+        }
 
-        // solve for: 
-        const { A, P } = this.solve(x0, x1)
+        if (Math.abs(x1)>0.1){
+            if(x1<0) x1+=modulo
+        }
+
+        while(x0-x1 < -modulo/2){
+            x0+=modulo
+        }
+        while(x0-x1 > modulo/2){
+            x0-=modulo
+        }
 
 
-        this.value = A * Math.exp(this.l1 * delta_time) * Math.cos(this.l2 * delta_time + P) + this.target
+        let x2 = c1 * x1 - c0 * x0
+
+        this.value = x2 + this.target 
+        this.acceleration = 0
     }
 }
 

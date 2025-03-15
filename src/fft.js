@@ -22,9 +22,6 @@ class SubMatrix {
             this.n2 = n2
 
             // The outter loop, loop through i2, j2
-
-
-
             for (let i2 = 0; i2 < n2; i2++) {
                 let child_row = []
                 for (let j2 = 0; j2 < n2; j2++) {
@@ -74,6 +71,8 @@ class SubMatrix {
             this.i1j2dn_wrappers[i].show.set(0)
             this.i1j2dn_wrappers[i].time_hand_fac.set(1)
             this.i1j2dn_wrappers[i].margin.set(0.65)
+            this.i1j2dn_wrappers[i].time.mass = n0
+            this.i1j2dn_wrappers[i].time.solveEquation()
 
             for (let j = 0; j < n0; j++) {
                 this.i1j2dn_wrappers[i].childs.push(matrix[i][j])
@@ -86,6 +85,8 @@ class SubMatrix {
             this.i2j2dn2_wrapper.show.set(0)
             this.i2j2dn2_wrapper.time_hand_fac.set(1)
             this.i2j2dn2_wrapper.margin.set(1.5)
+            this.i2j2dn2_wrapper.time.mass = n0
+            this.i2j2dn2_wrapper.time.solveEquation()
 
             for (let i = 0; i < n0; i++) {
                 for (let j = 0; j < n0; j++) {
@@ -173,7 +174,7 @@ class SubMatrix {
             for (let i2 = 0; i2 < n2; i2++) {
                 let x1 = x0;
                 for (let j2 = 0; j2 < n2; j2++) {
-                    size = this.childs[i2][j2].layout(layer - 1, x1, y1, time_delay + i2 * 100, false)
+                    size = this.childs[i2][j2].layout(layer - 1, x1, y1, time_delay + j2 * 200 / n2 + i2 * 100 /n2, false)
                     x1 += size
                 }
                 y1 += size
@@ -251,7 +252,7 @@ class SubMatrix {
                 }
             }, time_delay));
 
-            return n0 * 10 + 3
+            return n0 * 12
         }
     }
 }
@@ -274,11 +275,11 @@ class FFTMatrix {
 
     _initializeMatrix() {
         for (let i = 0; i < this.N; i++) {
-            const input_island = new DynamicIsland(i, -12, 8, 8, 10);
+            const input_island = new DynamicIsland(i*10, -12, 8, 8, 10);
             this.inputs.push(input_island);
             input_island.text.textContent = i;
 
-            const output_island = new DynamicIsland(-12, i, 8, 8, 10);
+            const output_island = new DynamicIsland(-12, i*10, 8, 8, 10);
             this.outputs.push(output_island);
             output_island.text.textContent = i;
         }
@@ -286,7 +287,7 @@ class FFTMatrix {
         for (let i = 0; i < this.N; i++) {
             const row = [];
             for (let j = 0; j < this.N; j++) {
-                const matrix_vars = new DynamicClock(j, i, 8, 8, 8, i * j / this.N);
+                const matrix_vars = new DynamicClock(j*10, i*10, 8, 8, 8, i * j / this.N);
                 matrix_vars.interactible((i*j)%this.N)
                 row.push(matrix_vars);
             }
