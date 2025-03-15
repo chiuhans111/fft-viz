@@ -1,4 +1,6 @@
 /**
+ * This calculates the SVG path for drawing a squircle.
+ * 
  * Author: Hans Chiu
  * This js code provide basic support for drawing squircle
  */
@@ -7,16 +9,14 @@
 const sr = 1 - 0.7952295855142201
 
 
+
 function get_squircle_parameter(squircle_ness) {
     const r = 1 - squircle_ness * sr
     const d3 = r - r / Math.sqrt(2)
-
     let f = squircle_ness
-
     return [
         f * 0.24537586511865822 + (1 - f) * 0.26512268687055385,
         f * 0.23315123245977887 + (1 - f) * 0.18747047774458375,
-        // f * 0.29288734074253003 + (1 - f) * 0.25702716149325106,
         d3
     ]
 
@@ -64,8 +64,7 @@ function squircle(x, y, width, height, cornerRadius) {
     const x_safe_ratio = (width / 2 - cornerRadius) / (width / 2)
     const y_safe_ratio = (height / 2 - cornerRadius) / (height / 2)
 
-    // a squircle requires safe ratio
-
+    // a squircle requires a safe ratio, which determines the squircleness..
     const x_squircle_ness = Math.min(1, x_safe_ratio / sr)
     const y_squircle_ness = Math.min(1, y_safe_ratio / sr)
 
@@ -134,8 +133,8 @@ function squircle(x, y, width, height, cornerRadius) {
     return path.join(' ');
 }
 
-
 function squircleRevolve(x, y, width, height, cornerRadius, f){
+    // Revolve around the squircle by giving f = 0~1, 0 = on the middle right.
     if (width < 1e-3) width = 1e-3
     if (height < 1e-3) height = 1e-3
     cornerRadius = Math.min(width / 2, height / 2, cornerRadius)

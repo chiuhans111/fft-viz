@@ -1,7 +1,17 @@
 import { DynamicClock, DynamicIsland } from "./dynamicIsland";
 const bg = document.getElementById('bg')
+const svg = document.querySelector('svg')
 
 class SubMatrix {
+    /**
+     * Create sub matrix when dividing matrix into smaller one
+     * @param {DynamicIsland[]} inputs All the inputs
+     * @param {DynamicIsland[]} outputs All the outputs
+     * @param {DynamicClock[]} matrix 
+     * @param {Number[]} radices 
+     * @param {Number} j2dn 
+     * @param {Number} i2j2dn2 
+     */
     constructor(inputs, outputs, matrix, radices, j2dn, i2j2dn2) {
         this.inputs = inputs
         this.outputs = outputs
@@ -293,6 +303,8 @@ class FFTMatrix {
             }
             this.matrix.push(row);
         }
+
+        svg.setAttribute('viewBox', `${-16} ${-18} ${this.N*12+12+2} ${this.N*12+12+2}`)
     }
 
     // layout_update() {

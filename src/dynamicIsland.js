@@ -2,21 +2,33 @@ import { squircle, squircleRevolve } from './squircle'
 import { SpringLoaded } from './springLoaded'
 import { hslToRgb } from './colors'
 
+// Will create dynamic island directly on the global svg tag here:
 const svg = document.querySelector('svg')
 const ns = "http://www.w3.org/2000/svg"
 
 class DynamicIsland {
+    /**
+     * Creates a dynamic island
+     * @param {Number} x X coordinate
+     * @param {Number} y Y coordinate
+     * @param {Number} width Width
+     * @param {Number} height Height
+     * @param {Number} radius Border Radius
+     */
     constructor(x, y, width, height, radius) {
+
+        // Global group that contains all element in this island
         this.g = document.createElementNS(ns, 'g')
+        this.g.style.willChange = 'transform'
         svg.append(this.g)
 
+        // Main path for the island
         this.path = document.createElementNS(ns, 'path')
-        this.path.style.willChange = 'transform'
-        // this.path.setAttribute('shape-rendering', 'geometricPrecision')
         this.path.setAttribute('fill', 'black')
         this.path.style.pointerEvents = 'none'
         this.g.append(this.path)
 
+        // Text in the island
         this.text = document.createElementNS(ns, 'text')
         this.text.textContent = ''
         this.text.setAttribute('fill', 'white')
@@ -27,26 +39,33 @@ class DynamicIsland {
         this.text.setAttribute('alignment-baseline', ' central')
         this.text.style.pointerEvents = 'none'
         this.g.append(this.text)
-
+        
+        // Create Spring loaded animation for position, size, etc...
         this.x = new SpringLoaded(x, 1, 1, 0.6)
         this.y = new SpringLoaded(y, 1, 1, 1)
         this.w = new SpringLoaded(width, 1, 1, 1)
         this.h = new SpringLoaded(height, 1, 1, 1)
         this.r = new SpringLoaded(radius, 1, 1, 1)
 
+        // To show or hide the island
         this.show = new SpringLoaded(1, 1, 1, 1)
+
+        // Initial value for the size
         this.w.value = 0
         this.h.value = 0
         this.show.value = 0
 
-
-
+    
+        // This island will change size and position to wrap around the childrens
+        /** @type {DynamicIsland[]} */
         this.childs = []
+        // The margin to use when wrap around the childrens (acts like padding)
         this.margin = new SpringLoaded(1, 1, 1, 1)
     }
 
     update(delta_time) {
         this.show.update(delta_time)
+        
         if (this.childs.length) {
             let x_min = this.childs[0].x.value - this.childs[0].w.value / 2
             let x_max = this.childs[0].x.value + this.childs[0].w.value / 2
