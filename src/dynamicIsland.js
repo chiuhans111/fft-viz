@@ -172,8 +172,8 @@ class DynamicClock extends DynamicIsland {
         ))
 
         const color = 'rgb(' + hslToRgb(this.time.value, 0.65, 0.55).join(',') + ')'
-        this.path.setAttribute('fill', color)
         // const color = 'black'
+        this.path.setAttribute('fill', color)
 
         this.time_hand.setAttribute('stroke', color)
         this.time_hand.setAttribute('stroke-width', thickness * 2)
